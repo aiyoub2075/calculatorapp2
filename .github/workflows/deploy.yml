@@ -18,13 +18,13 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/meinPrivateKey
+          echo "${{ secrets.SSH_KEY}}" > ~/.ssh/meinPrivateKey
           chmod 600 ~/.ssh/meinPrivateKey
           ssh-keyscan -H ${{secrets.EC2_IP}} >> ~/.ssh/known_hosts
 
       - name: SSH Connection to EC2
         run: |
-          ssh -i ~/.ssh/meinPrivateKey ec2-user@${{secrets.EC2_IP}} << 'ENDSSH'
+          ssh -i ~/.ssh/meinPrivateKey ec2-user@${{secrets.IP_ADRESSE}} << 'ENDSSH'
               sudo yum update -y
               sudo yum upgrade -y
               sudo yum install -y nodejs
@@ -32,11 +32,11 @@ jobs:
           ENDSSH
 
       - name: Copy build to EC2
-        run: scp -i ~/.ssh/meinPrivateKey -r build ec2-user@${{secrets.EC2_IP}}:/home/ec2-user/build
+        run: scp -i ~/.ssh/meinPrivateKey -r build ec2-user@${{secrets.IP_ADRESSE}}:/home/ec2-user/build
 
       - name: Start Calculator on EC2
         run: |
-            ssh -i ~/.ssh/meinPrivateKey ec2-user@${{secrets.EC2_IP}} << 'ENDSSH'
+            ssh -i ~/.ssh/meinPrivateKey ec2-user@${{secrets.IP_ADRESSE}} << 'ENDSSH'
                 sudo serve -l 80 -s ~/build
             ENDSSH
 
